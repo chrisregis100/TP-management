@@ -1,86 +1,148 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import gsap from "gsap";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Home,
+  BookOpen,
+  CreditCard,
+  Users,
+  Calendar,
+  FileText,
+  Settings,
+} from "lucide-react";
+import OverviewSection from "../components/studentDashboard/OverviewSection";
+import PracticalWorksSection from "../components/studentDashboard/PraticalSection";
+import PaymentsSection from "../components/studentDashboard/PaymentsSection";
+import GroupsSection from "../components/studentDashboard/GroupeSection";
+import GradesSection from "../components/studentDashboard/GradesSection";
+import SettingsSection from "../components/studentDashboard/SettingSection";
+import ScheduleSection from "../components/studentDashboard/SheduleSection";
+const StudentDashboard = () => {
+  const [activeSection, setActiveSection] = useState("overview");
+  const [userProfile, setUserProfile] = useState(null);
 
-function StudentDashboard() {
-  const sidebarRef = useRef(null);
-  const mainContentRef = useRef(null);
+  const dashboardSections = [
+    {
+      id: "overview",
+      icon: <Home className="w-6 h-6" />,
+      title: "Tableau de Bord",
+      description: "Vue d'ensemble de vos études",
+    },
+    {
+      id: "practical-works",
+      icon: <BookOpen className="w-6 h-6" />,
+      title: "Travaux Pratiques",
+      description: "Mes TP inscrits",
+    },
+    {
+      id: "payments",
+      icon: <CreditCard className="w-6 h-6" />,
+      title: "Paiements",
+      description: "Historique et frais",
+    },
+    {
+      id: "groups",
+      icon: <Users className="w-6 h-6" />,
+      title: "Groupes",
+      description: "Mes affectations",
+    },
+    {
+      id: "schedule",
+      icon: <Calendar className="w-6 h-6" />,
+      title: "Emploi du Temps",
+      description: "Mes créneaux de TP",
+    },
+    {
+      id: "grades",
+      icon: <FileText className="w-6 h-6" />,
+      title: "Notes",
+      description: "Résultats et performances",
+    },
+    {
+      id: "settings",
+      icon: <Settings className="w-6 h-6" />,
+      title: "Paramètres",
+      description: "Profil et préférences",
+    },
+  ];
 
-  useEffect(() => {
-    // Animation pour la Sidebar
-    gsap.fromTo(
-      sidebarRef.current,
-      { x: -200, opacity: 0 },
-      { x: 0, opacity: 1, duration: 1 }
-    );
-
-    // Animation pour le Contenu Principal
-    gsap.fromTo(
-      mainContentRef.current,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, delay: 0.5 }
-    );
-  }, []);
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case "overview":
+        return <OverviewSection userProfile={userProfile} />;
+      case "practical-works":
+        return <PracticalWorksSection />;
+      case "payments":
+        return <PaymentsSection />;
+      case "groups":
+        return <GroupsSection />;
+      case "schedule":
+        return <ScheduleSection />;
+      case "grades":
+        return <GradesSection />;
+      case "settings":
+        return <SettingsSection userProfile={userProfile} />;
+      default:
+        return <OverviewSection userProfile={userProfile} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <aside
-        ref={sidebarRef}
-        className="w-64 bg-indigo-600 text-white shadow-lg transform"
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-64 bg-white shadow-xl p-6 border-r"
       >
-        <div className="p-6 text-center font-bold text-2xl">Étudiant</div>
-        <nav>
-          <ul className="space-y-4 p-4">
-            <li>
-              <Link
-                to="/dashboard/student/profile"
-                className="block py-2 px-4 rounded hover:bg-indigo-500 transition duration-300"
-              >
-                Profil
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard/student/tps"
-                className="block py-2 px-4 rounded hover:bg-indigo-500 transition duration-300"
-              >
-                Travaux Pratiques
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard/student/payments"
-                className="block py-2 px-4 rounded hover:bg-indigo-500 transition duration-300"
-              >
-                Paiements
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard/student/groups"
-                className="block py-2 px-4 rounded hover:bg-indigo-500 transition duration-300"
-              >
-                Groupes & Polynômes
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </aside>
+        <div className="mb-10 text-center">
+          <div className="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-2xl font-bold text-blue-600">
+              {userProfile ? userProfile.name[0] : ""}
+            </span>
+          </div>
+          <h1 className="text-xl font-bold text-blue-600">
+            {userProfile ? userProfile.name : "Chargement..."}
+          </h1>
+          <p className="text-gray-500 text-sm">
+            {userProfile ? userProfile.program : ""}
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <main ref={mainContentRef} className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-4">
-          Bienvenue sur votre Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Accédez à vos Travaux Pratiques, vos groupes, et vos paiements depuis
-          cette interface.
-        </p>
-        {/* Ajouter ici les routes spécifiques pour chaque section */}
-      </main>
+        <nav className="space-y-2">
+          {dashboardSections.map((section) => (
+            <motion.button
+              key={section.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveSection(section.id)}
+              className={`w-full flex items-center p-3 rounded-lg transition-all duration-300 ${
+                activeSection === section.id
+                  ? "bg-blue-100 text-blue-600"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
+            >
+              {section.icon}
+              <div className="ml-3">
+                <h3 className="font-semibold text-sm">{section.title}</h3>
+                <p className="text-xs text-gray-400">{section.description}</p>
+              </div>
+            </motion.button>
+          ))}
+        </nav>
+      </motion.div>
+
+      {/* Main Content Area */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex-1 p-10 bg-gray-50"
+      >
+        {renderActiveSection()}
+      </motion.div>
     </div>
   );
-}
+};
 
 export default StudentDashboard;
