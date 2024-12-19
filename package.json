@@ -1,0 +1,9 @@
+{
+    "name": "tp-unipratique",
+    "version": "1.0.0",
+    "scripts": {
+      "frontend": "cd frontend && pnpm run build",
+      "backend": "cd backend && pnpm run build",
+      "build": "pnpm run frontend && pnpm run backend"
+    }
+  }
