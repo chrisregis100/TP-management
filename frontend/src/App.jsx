@@ -9,32 +9,54 @@ import StudentTP from "./pages/StudentTP";
 import Home from "./pages/Home";
 import TeacherTPManagement from "./pages/TeacherTPManagement";
 import { ToastContainer } from "react-toastify";
+import Verification from "./pages/VerificationPage";
+import { AuthProvider } from "./store/AuthContext";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import AcessDenied from "./pages/AcessDenied";
 
 function App() {
   const router = createBrowserRouter([
     { path: "/", element: <Home /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
-    { path: "/dashboard/student", element: <StudentTP /> },
+    { path: "/verification", element: <Verification /> },
+    {
+      path: "/dashboard/student",
+      element: (
+        <ProtectedRoute>
+          <StudentTP />
+        </ProtectedRoute>
+      ),
+    },
     {
       path: "/dashboard/teacher",
-      element: <TeacherTPManagement />,
+      element: (
+        <ProtectedRoute>
+          <TeacherTPManagement />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/unauthorized",
+      element: <AcessDenied />,
     },
   ]);
   return (
     <div className="min-h-screen bg-gray-100">
-      <RouterProvider router={router} />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </AuthProvider>
     </div>
   );
 }

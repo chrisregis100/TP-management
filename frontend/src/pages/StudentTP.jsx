@@ -20,6 +20,24 @@ const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [userProfile, setUserProfile] = useState(null);
 
+  /*   const fetchUserProfile = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      setUserProfile(data);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération du profil utilisateur",
+        errors
+      );
+    }
+  }; */
+
   const dashboardSections = [
     {
       id: "overview",

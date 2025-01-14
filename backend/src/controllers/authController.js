@@ -22,39 +22,63 @@ const genererToken = (utilisateur) => {
 // Inscription générique
 exports.inscription = async (req, res) => {
   try {
-    const { nom, prenom, email, motDePasse, role } = req.body;
+    const { nom, prenom, email, motDePasse, matricule } = req.body;
+
+    // Vérification des champs requis
+    if (!nom || !prenom || !email || !motDePasse || !matricule) {
+      return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
+    }
 
     // Vérifier si l'utilisateur existe déjà
-    const utilisateurExistant = await User.findOne({ email });
+    const utilisateurExistant = await User.findOne({ email, matricule });
     if (utilisateurExistant) {
-      return res.status(400).json({ message: 'Un utilisateur avec cet email existe déjà' });
+      return res.status(400).json({ message: 'Un utilisateur avec cet email ou matricule existe déjà.' });
     }
-
-    // Créer un nouvel utilisateur
-    const nouvelUtilisateur = new User({
-      nom,
-      prenom,
-      email,
-      motDePasse,
-      role: role || 'etudiant'
-    });
-    console.log(nouvelUtilisateur);
-    
-
-    // Générer et envoyer un code de vérification
+    // Générer un code de vérification
     const codeVerification = genererCodeVerification();
-    nouvelUtilisateur.codeVerification = codeVerification;
-    nouvelUtilisateur.codeVerificationExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
-    
-    // Envoyer l'email de vérification
-    const emailEnvoye = await envoyerEmailVerification(email, codeVerification);
-    if (!emailEnvoye) {
-      return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de vérification' });
-    }
 
+    let nouvelUtilisateur;
+
+    // Logique spécifique pour les enseignants
+    if (email.endsWith('@uac.bj')) {
+      if (!matricule.startsWith('TEA')) {
+        return res.status(400).json({ 
+          message: 'Les enseignants doivent utiliser un matricule valide commençant par TEA.' 
+        });
+      }
+
+      nouvelUtilisateur = new User({
+        nom,
+        prenom,
+        email,
+        motDePasse,
+        matricule,
+        role: 'enseignant',
+        codeVerification,
+        codeVerificationExpire: Date.now() + 15 * 60 * 1000, // 15 minutes
+      });
+    } else {
+      // Logique pour les étudiants
+      nouvelUtilisateur = new User({
+        nom,
+        prenom,
+        email,
+        motDePasse,
+        matricule,
+        role: 'etudiant',
+        codeVerification,
+        codeVerificationExpire: Date.now() + 15 * 60 * 1000, // 15 minutes
+      });
+    }
 
     // Sauvegarder l'utilisateur
     await nouvelUtilisateur.save();
+
+    // Envoyer l'email de vérification
+    const emailEnvoye = await envoyerEmailVerification(email, codeVerification);
+    if (!emailEnvoye) {
+      return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de vérification.' });
+    }
 
     res.status(201).json({
       message: 'Inscription réussie. Veuillez vérifier votre email.',
@@ -63,21 +87,22 @@ exports.inscription = async (req, res) => {
         nom: nouvelUtilisateur.nom,
         prenom: nouvelUtilisateur.prenom,
         email: nouvelUtilisateur.email,
-        role: nouvelUtilisateur.role
-      }
+        matricule: nouvelUtilisateur.matricule,
+        role: nouvelUtilisateur.role,
+      },
     });
   } catch (erreur) {
-    res.status(500).json({ 
-      message: 'Erreur lors de l\'inscription', 
-      erreur: erreur.message 
-    });
+    console.error(erreur);
+    res.status(500).json({ message: 'Erreur lors de l\'inscription.', erreur: erreur.message });
   }
 };
+
 
 // Vérification du code
 exports.verifierCode = async (req, res) => {
   try {
     const { email, code } = req.body;
+    
 
     const utilisateur = await User.findOne({ 
       email, 
@@ -107,6 +132,7 @@ exports.verifierCode = async (req, res) => {
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
         email: utilisateur.email,
+        matricule:utilisateur.matricule,
         role: utilisateur.role
       }
     });
@@ -121,23 +147,30 @@ exports.verifierCode = async (req, res) => {
 // Connexion
 exports.connexion = async (req, res) => {
   try {
-    const { email, motDePasse } = req.body;
+    const {matricule, password } = req.body;
+    console.log(req.body);
+    console.log(password);
+    console.log(matricule);
+    
+    
 
     // Rechercher l'utilisateur
-    const utilisateur = await User.findOne({ email });
+    const utilisateur = await User.findOne({ matricule });
     if (!utilisateur) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return res.status(401).json({ message: "Utilisateur non trouvé. veuillez vérifier votre matricule" });
     }
+   
+    
 
     // Vérifier le mot de passe
-    const motDePasseCorrespondant = await utilisateur.comparerMotDePasse(motDePasse);
+    const motDePasseCorrespondant = await utilisateur.comparerMotDePasse(password);
     if (!motDePasseCorrespondant) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return res.status(401).json({ message: 'matricule ou mot de passe incorrect' });
     }
 
     // Vérifier si l'email est vérifié
     if (!utilisateur.estVerifie) {
-      return res.status(403).json({ message: 'Veuillez vérifier votre email' });
+      return res.status(403).json({ message: 'Veuillez vérifier votre email pour comfirmer votre adresse mail' });
     }
 
     // Générer un token
@@ -153,6 +186,7 @@ exports.connexion = async (req, res) => {
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
         email: utilisateur.email,
+        matricule:utilisateur.matricule,
         role: utilisateur.role
       }
     });
@@ -167,12 +201,18 @@ exports.connexion = async (req, res) => {
 // Inscription spécifique pour les enseignants (par un admin)
 exports.inscriptionEnseignant = async (req, res) => {
   try {
-    const { nom, prenom, email, motDePasse } = req.body;
+    const { nom, prenom, email, matricule, motDePasse } = req.body;
 
     // Vérification spécifique de l'email pour les enseignants
     if (!email.endsWith('@uac.bj')) {
       return res.status(400).json({ 
         message: 'Les enseignants doivent utiliser une adresse email se terminant par @uac.bj' 
+      });
+    }
+
+    if(!matricule.startsWith('TEA')){
+      return res.status(400).json({ 
+        message: 'Les enseignants doivent utiliser un matricule valide commençant par TEA' 
       });
     }
 
@@ -187,6 +227,7 @@ exports.inscriptionEnseignant = async (req, res) => {
       prenom,
       email,
       motDePasse,
+      matricule,
       role: 'enseignant'
     });
 
@@ -209,6 +250,7 @@ exports.inscriptionEnseignant = async (req, res) => {
         nom: nouvelEnseignant.nom,
         prenom: nouvelEnseignant.prenom,
         email: nouvelEnseignant.email,
+        matricule:nouvelEnseignant.matricule,
         role: nouvelEnseignant.role
       }
     });

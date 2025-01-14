@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-function OverviewSection({ userProfile }) {
-  const [practicalWorks, setPracticalWorks] = useState([]);
+function OverviewSection() {
+  //const [practicalWorks, setPracticalWorks] = useState([]);
+  const [userData, setUserData] = useState();
 
   useEffect(() => {
-    setPracticalWorks(mockDataService.getPracticalWorks());
+    const data = JSON.parse(localStorage.getItem("user"));
+    setUserData(data);
   }, []);
 
   // Mock data service (would be replaced by actual API calls)
-  const mockDataService = {
+  /*   const mockDataService = {
     getUserProfile: () => ({
       name: "Marie Dupont",
       email: "marie.dupont@university.edu",
@@ -82,7 +84,7 @@ function OverviewSection({ userProfile }) {
         status: "En attente",
       },
     ],
-  };
+  }; */
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -90,22 +92,17 @@ function OverviewSection({ userProfile }) {
       className="space-y-6"
     >
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4">
-          Bienvenue, {userProfile?.name}
-        </h2>
+        <h2 className="text-xl font-bold mb-4">Bienvenue, {userData?.nom}</h2>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <h3 className="font-semibold mb-2">Informations Personnelles</h3>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p>
-                <strong>Numéro Étudiant:</strong> {userProfile?.studentId}
+                <strong>Numéro Matricule:</strong> {userData?.matricule}
               </p>
               <p>
-                <strong>Email:</strong> {userProfile?.email}
-              </p>
-              <p>
-                <strong>Programme:</strong> {userProfile?.program}
+                <strong>Email:</strong> {userData?.email}
               </p>
             </div>
           </div>
@@ -113,7 +110,7 @@ function OverviewSection({ userProfile }) {
           <div>
             <h3 className="font-semibold mb-2">Travaux Pratiques en Cours</h3>
             <div className="space-y-2">
-              {practicalWorks.map((pw) => (
+              {/*    {practicalWorks.map((pw) => (
                 <div
                   key={pw.id}
                   className="bg-blue-50 p-3 rounded-lg flex justify-between items-center"
@@ -132,7 +129,7 @@ function OverviewSection({ userProfile }) {
                     {pw.status}
                   </span>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>
