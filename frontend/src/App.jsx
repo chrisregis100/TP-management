@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import StudentTP from "./pages/StudentTP";
 import Home from "./pages/Home";
-import TeacherTPManagement from "./pages/TeacherTPManagement";
+import TeacherTPManagement from "./pages/TeacherDashboard/TeacherTPManagement";
 import { ToastContainer } from "react-toastify";
 import Verification from "./pages/VerificationPage";
 import { AuthProvider } from "./store/AuthContext";
@@ -30,11 +30,7 @@ function App() {
     },
     {
       path: "/dashboard/teacher",
-      element: (
-        <ProtectedRoute>
-          <TeacherTPManagement />
-        </ProtectedRoute>
-      ),
+      element: <TeacherTPManagement />,
     },
     {
       path: "/unauthorized",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const GradingSection = () => {
   const [students, setStudents] = useState([

@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Edit, PlusCircle, Trash2 } from "lucide-react";
 
 const StudentManagementSection = () => {
   const [students, setStudents] = useState([]);
   const [newGroup, setNewGroup] = useState("");
-
-  useEffect(() => {
-    // Simulating API call
-    setStudents(mockDataService.getStudents());
-  }, []);
 
   const handleCreateGroup = () => {
     if (newGroup.trim()) {

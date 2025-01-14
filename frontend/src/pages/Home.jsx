@@ -9,15 +9,10 @@ import CTA from "../components/CTA";
 const Home = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <Header />
-      {/* Hero Section */}
       <Hero />
-      {/* Features Section */}
       <Features />
-      {/* Call to Action */}
       <CTA />
-      {/* Footer */}
       <Footer />
     </div>
   );

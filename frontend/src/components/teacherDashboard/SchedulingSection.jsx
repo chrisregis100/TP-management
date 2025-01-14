@@ -1,5 +1,6 @@
 import { Edit, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const SchedulingSection = () => {
   const [schedule, setSchedule] = useState([
