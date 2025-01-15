@@ -20,6 +20,11 @@ import SettingsSection from "../../components/studentDashboard/SettingSection";
 
 const TeacherDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const dashboardSections = [
     {
@@ -108,42 +113,82 @@ const TeacherDashboard = () => {
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="w-72 bg-white shadow-lg border-r"
+          className={`bg-white shadow-lg border-r ${
+            isSidebarOpen ? "w-72" : "w-20"
+          }`}
         >
-          <div className="p-6">
-            <p className="text-gray-500 mb-6">Gestion des Travaux Pratiques</p>
-            <nav className="space-y-2">
-              {dashboardSections.map((section) => (
-                <motion.button
-                  key={section.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center p-4 rounded-lg transition-all duration-200 ${
-                    activeSection === section.id
-                      ? "bg-blue-50 text-blue-600 border border-blue-100"
-                      : "hover:bg-gray-50 text-gray-600"
-                  }`}
-                >
-                  <div
-                    className={`${
+          <button
+            onClick={toggleSidebar}
+            className="hamburger-button absolute top-4 left-4"
+          >
+            ☰
+          </button>
+          {isSidebarOpen ? (
+            <div className="p-6">
+              <p className="text-gray-500 mb-6">
+                Gestion des Travaux Pratiques
+              </p>
+              <nav className="space-y-2">
+                {dashboardSections.map((section) => (
+                  <motion.button
+                    key={section.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full flex items-center p-4 rounded-lg transition-all duration-200 ${
                       activeSection === section.id
-                        ? "bg-blue-100"
-                        : "bg-gray-100"
-                    } p-2 rounded-lg`}
+                        ? "bg-blue-50 text-blue-600 border border-blue-100"
+                        : "hover:bg-gray-50 text-gray-600"
+                    }`}
                   >
-                    {section.icon}
-                  </div>
-                  <div className="ml-4 text-left">
-                    <h3 className="font-medium text-sm">{section.title}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {section.description}
-                    </p>
-                  </div>
-                </motion.button>
-              ))}
-            </nav>
-          </div>
+                    <div
+                      className={`${
+                        activeSection === section.id
+                          ? "bg-blue-100"
+                          : "bg-gray-100"
+                      } p-2 rounded-lg`}
+                    >
+                      {section.icon}
+                    </div>
+                    <div className="ml-4 text-left">
+                      <h3 className="font-medium text-sm">{section.title}</h3>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {section.description}
+                      </p>
+                    </div>
+                  </motion.button>
+                ))}
+              </nav>
+            </div>
+          ) : (
+            <div className="p-6">
+              <nav className="space-y-2">
+                {dashboardSections.map((section) => (
+                  <motion.button
+                    key={section.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full flex items-center p-4 rounded-lg transition-all duration-200 ${
+                      activeSection === section.id
+                        ? "bg-blue-50 text-blue-600 border border-blue-100"
+                        : "hover:bg-gray-50 text-gray-600"
+                    }`}
+                  >
+                    <div
+                      className={`${
+                        activeSection === section.id
+                          ? "bg-blue-100"
+                          : "bg-gray-100"
+                      } p-2 rounded-lg`}
+                    >
+                      {section.icon}
+                    </div>
+                  </motion.button>
+                ))}
+              </nav>
+            </div>
+          )}
         </motion.div>
 
         {/* Main Content Area */}

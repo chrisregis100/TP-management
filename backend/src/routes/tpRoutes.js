@@ -20,5 +20,12 @@ router.get('/tps',  tpController.findAllTPs);
 
 router.get('/tps/:tpId', authMiddleware(['teacher', 'admin']), tpController.findTPById);
 
+// route pour trouver la categorie de tp
+
+router.get('/api/categories', tpController.findCategorie);
+
+// route pour crée la categorie de tp
+router.post('/api/categories', tpController.createCategorie);
+
 
 module.exports = router;

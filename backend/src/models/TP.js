@@ -34,6 +34,14 @@ const TPSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  horaire:{
+    type: String,
+  
+  },
+  duree: {
+    type: Number,
+   
+  },
   price: {
     type: Number,
     default: 0

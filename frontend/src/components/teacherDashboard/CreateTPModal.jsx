@@ -1,15 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
 const CreateTPModal = ({ isOpen, onClose, onSubmit }) => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/tps/categorie")
+      .then((res) => res.json())
+      .then((data) => {
+        setCategories(data);
+      });
+  }, []);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    annee: "",
+    filiere: "",
     maxStudents: "",
-    schedule: "",
-    duration: "",
+    horaire: "",
+    duree: "",
+    price: "",
   });
 
   const handleChange = (e) => {
@@ -26,9 +39,12 @@ const CreateTPModal = ({ isOpen, onClose, onSubmit }) => {
     setFormData({
       title: "",
       description: "",
+      annee: "",
+      filiere: "",
       maxStudents: "",
-      schedule: "",
-      duration: "",
+      horaire: "",
+      duree: "",
+      price: "",
     });
   };
 
@@ -103,6 +119,41 @@ const CreateTPModal = ({ isOpen, onClose, onSubmit }) => {
                     placeholder="Description du TP..."
                   />
                 </div>
+                <div>
+                  <label
+                    htmlFor="annee"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Filière
+                  </label>
+                  <select
+                    name="filiere"
+                    id="filiere"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                  >
+                    <option value="filiere1">Selectionnez une filiere</option>
+                    <option value="filiere2">Filière 2</option>
+                    <option value="filiere3">Filière 3</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="annee"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Année
+                  </label>
+                  <select
+                    name="annee"
+                    id="annee"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                  >
+                    <option value="annee1">Selectionnez une année</option>
+                    <option value="annee2">Année 2</option>
+                    <option value="annee3">Année 3</option>
+                  </select>
+                </div>
 
                 <div>
                   <label
@@ -159,6 +210,24 @@ const CreateTPModal = ({ isOpen, onClose, onSubmit }) => {
                     required
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                     placeholder="ex: 2h"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Prix
+                  </label>
+                  <input
+                    type="text"
+                    id="price"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                    placeholder="ex: 1000 FCFA"
                   />
                 </div>
 

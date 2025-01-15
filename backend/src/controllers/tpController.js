@@ -1,4 +1,5 @@
 // backend/controllers/tpController.js
+const Field = require('../models/FieldsModel');
 const TP = require('../models/TP');
 
 //create tp
@@ -9,7 +10,9 @@ exports.createTP = async (req, res) => {
       filiere,
       annee,
       description, 
-      capacity, 
+      capacity,
+      horaire,
+      duree,
       price, 
     } = req.body;
     console.log(req.body);
@@ -23,6 +26,8 @@ exports.createTP = async (req, res) => {
       annee,
       description,
       capacity,
+      horaire,
+      duree,
       teacher: req.user.id,
       price,
     });
@@ -169,3 +174,43 @@ exports.deleteTPById = async (req, res) => {
     });
   }
 };
+
+
+
+// create categorie of tp
+exports.createCategorie = async (req, res) => {
+  try {
+    const { filiere, annee } = req.body;
+    console.log(req.body);
+    const newField = new Field({ filiere, annee });
+    const savedField = await newField.save();
+    res.status(201).json({
+      message: 'Categorie cree avec success',
+      categorie: savedField
+    });
+  } catch (error) {
+    res.status(400).json({ 
+      message: 'Erreur lors de la creation de la categorie',
+      error: error.message 
+    });
+  }
+};
+
+
+// find categorie of tp
+exports.findCategorie = async (req, res) => {
+  try {
+    const fields = await Field.find();
+    console.log(fields|| 'not found');
+    if (!fields) {
+      return res.status(404).json({ message: 'TP non trouvé' });
+    }
+    res.json({message: 'filiere et annee trouvée', categorie: fields});
+  } catch (error) {
+    res.status(400).json({ 
+      message: 'Erreur lors de la recherche du TP',
+      error: error.message 
+    });
+  }
+};
+
