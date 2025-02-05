@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Home,
-  BookOpen,
   CreditCard,
   Users,
   Calendar,
@@ -10,7 +9,6 @@ import {
   Settings,
 } from "lucide-react";
 import OverviewSection from "../components/studentDashboard/OverviewSection";
-import PracticalWorksSection from "../components/studentDashboard/PraticalSection";
 import PaymentsSection from "../components/studentDashboard/PaymentsSection";
 import GroupsSection from "../components/studentDashboard/GroupeSection";
 import GradesSection from "../components/studentDashboard/GradesSection";
@@ -44,12 +42,6 @@ const StudentDashboard = () => {
       icon: <Home className="w-6 h-6" />,
       title: "Tableau de Bord",
       description: "Vue d'ensemble de vos études",
-    },
-    {
-      id: "practical-works",
-      icon: <BookOpen className="w-6 h-6" />,
-      title: "Travaux Pratiques",
-      description: "Mes TP inscrits",
     },
     {
       id: "payments",
@@ -87,8 +79,6 @@ const StudentDashboard = () => {
     switch (activeSection) {
       case "overview":
         return <OverviewSection userProfile={userProfile} />;
-      case "practical-works":
-        return <PracticalWorksSection />;
       case "payments":
         return <PaymentsSection />;
       case "groups":

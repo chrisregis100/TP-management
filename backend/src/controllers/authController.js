@@ -149,18 +149,13 @@ exports.connexion = async (req, res) => {
   try {
     const {matricule, password } = req.body;
     console.log(req.body);
-    console.log(password);
-    console.log(matricule);
     
-    
-
     // Rechercher l'utilisateur
     const utilisateur = await User.findOne({ matricule });
+    
     if (!utilisateur) {
       return res.status(401).json({ message: "Utilisateur non trouvé. veuillez vérifier votre matricule" });
     }
-   
-    
 
     // Vérifier le mot de passe
     const motDePasseCorrespondant = await utilisateur.comparerMotDePasse(password);
@@ -168,11 +163,11 @@ exports.connexion = async (req, res) => {
       return res.status(401).json({ message: 'matricule ou mot de passe incorrect' });
     }
 
-    // Vérifier si l'email est vérifié
+  /*   // Vérifier si l'email est vérifié
     if (!utilisateur.estVerifie) {
       return res.status(403).json({ message: 'Veuillez vérifier votre email pour comfirmer votre adresse mail' });
     }
-
+ */
     // Générer un token
     const token = genererToken(utilisateur);
 

@@ -1,4 +1,4 @@
-import { useAuth } from "../store/AuthContext";
+/* import { useAuth } from "../store/AuthContext";
 import { Navigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
@@ -18,3 +18,4 @@ function ProtectedRoute({ children, requiredRole }) {
 }
 
 export default ProtectedRoute;
+ */

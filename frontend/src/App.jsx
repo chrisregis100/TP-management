@@ -11,7 +11,6 @@ import TeacherTPManagement from "./pages/TeacherDashboard/TeacherTPManagement";
 import { ToastContainer } from "react-toastify";
 import Verification from "./pages/VerificationPage";
 import { AuthProvider } from "./store/AuthContext";
-import ProtectedRoute from "./utils/ProtectedRoute";
 import AcessDenied from "./pages/AcessDenied";
 
 function App() {
@@ -22,11 +21,7 @@ function App() {
     { path: "/verification", element: <Verification /> },
     {
       path: "/dashboard/student",
-      element: (
-        <ProtectedRoute>
-          <StudentTP />
-        </ProtectedRoute>
-      ),
+      element: <StudentTP />,
     },
     {
       path: "/dashboard/teacher",

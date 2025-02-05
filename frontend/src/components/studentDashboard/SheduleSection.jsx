@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 // Schedule Section
 const ScheduleSection = () => {
-  const [groupAssignments, setGroupAssignments] = useState([]);
-
-  useEffect(() => {
-    setGroupAssignments(mockDataService.getGroupAssignments());
-  }, []);
-
   const daysOfWeek = [
     "Lundi",
     "Mardi",
@@ -27,7 +20,7 @@ const ScheduleSection = () => {
       <div className="bg-white shadow-md rounded-lg p-6">
         <h2 className="text-xl font-bold mb-4">Emploi du Temps</h2>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        {/*         <div className="grid md:grid-cols-3 gap-4">
           {daysOfWeek.map((day) => (
             <div key={day} className="border rounded-lg p-4">
               <h3 className="font-semibold mb-2">{day}</h3>
@@ -49,7 +42,7 @@ const ScheduleSection = () => {
               )}
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </motion.div>
   );

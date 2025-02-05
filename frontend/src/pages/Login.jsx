@@ -1,13 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
-import { useAuth } from "../store/AuthContext";
+import { toast } from "react-toastify";
 
 function Login() {
   const formRef = useRef(null);
   const [matricule, setMatricule] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,20 +28,25 @@ function Login() {
       },
       body: JSON.stringify(data),
     });
-    if (response.ok) {
-      const data = await response.json();
+    const fetchData = await response.json();
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.utilisateur));
-      const role = data.utilisateur.role;
+    if (!response.ok) {
+      toast.error(
+        fetchData.message || "Une erreur s'est produite lors de la connexion."
+      );
+    } else {
+      toast.success("Connexion réussie !");
+      console.log(fetchData);
+
+      localStorage.setItem("token", fetchData.token);
+      localStorage.setItem("user", JSON.stringify(fetchData.utilisateur));
+      const role = fetchData.utilisateur.role;
       if (role === "enseignant") {
         navigate("/dashboard/teacher");
       } else if (role === "etudiant") {
         navigate("/dashboard/student");
       }
     }
-    login(data.utilisateur, data.token);
-    console.log("fait");
   };
 
   return (

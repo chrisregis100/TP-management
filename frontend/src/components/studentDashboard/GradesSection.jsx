@@ -1,28 +1,6 @@
-import { useEffect, useState } from "react";
-
 import { motion } from "framer-motion";
 
 const GradesSection = () => {
-  const [grades, setGrades] = useState([]);
-  const [overallAverage, setOverallAverage] = useState(0);
-
-  useEffect(() => {
-    const studentGrades = mockDataService.getGrades();
-    setGrades(studentGrades);
-
-    // Calculate weighted average
-    const totalWeightedScore = studentGrades.reduce(
-      (sum, grade) => sum + grade.grade * grade.coefficient,
-      0
-    );
-    const totalCoefficients = studentGrades.reduce(
-      (sum, grade) => sum + grade.coefficient,
-      0
-    );
-    const average = totalWeightedScore / totalCoefficients;
-    setOverallAverage(average);
-  }, []);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -32,9 +10,7 @@ const GradesSection = () => {
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Mes Notes</h2>
-          <div className="text-blue-600 font-bold">
-            Moyenne Générale: {overallAverage.toFixed(2)}/20
-          </div>
+          <div className="text-blue-600 font-bold">Moyenne Générale:</div>
         </div>
 
         <table className="w-full">
@@ -46,7 +22,7 @@ const GradesSection = () => {
               <th className="p-2 text-right">Performance</th>
             </tr>
           </thead>
-          <tbody>
+          {/*  <tbody>
             {grades.map((grade, index) => (
               <tr key={index} className="border-b">
                 <td className="p-2">{grade.practicalWork}</td>
@@ -67,7 +43,7 @@ const GradesSection = () => {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </tbody> */}
         </table>
       </div>
     </motion.div>

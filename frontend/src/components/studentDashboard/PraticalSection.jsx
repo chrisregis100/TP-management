@@ -2,8 +2,32 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 const PracticalWorksSection = () => {
-  const [practicalWorks, setPracticalWorks] = useState([]);
-
+  const [practicalWorks, setPracticalWorks] = useState([
+    {
+      id: 1,
+      title: "Analyse Numérique",
+      code: "AN-TP-001",
+      instructor: "Dr. John Doe",
+      status: "Inscrit",
+      paymentStatus: "Payé",
+    },
+    {
+      id: 2,
+      title: "Programmation Web",
+      code: "PW-TP-001",
+      instructor: "Dr. Jane Doe",
+      status: "En Attente",
+      paymentStatus: "Non Payé",
+    },
+    {
+      id: 3,
+      title: "Base de Données",
+      code: "BD-TP-001",
+      instructor: "Dr. John Doe",
+      status: "Inscrit",
+      paymentStatus: "Payé",
+    },
+  ]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

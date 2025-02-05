@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Users,
-  Calendar,
-  Clock,
-  ChevronRight,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { Users, Calendar, Clock, Edit, Trash2 } from "lucide-react";
 import CreateTPModal from "../teacherDashboard/CreateTPModal";
 
 const OverviewSection = () => {
@@ -65,13 +58,6 @@ const OverviewSection = () => {
         <h2 className="text-2xl font-bold text-gray-800">
           Vos Travaux Pratiques
         </h2>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-        >
-          <span>Nouveau TP</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1,28 +1,6 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const PaymentsSection = () => {
-  const [paymentHistory, setPaymentHistory] = useState([]);
-  const [totalPaid, setTotalPaid] = useState(0);
-
-  useEffect(() => {
-    const payments = mockDataService.getPaymentHistory();
-    setPaymentHistory(payments);
-
-    // Calculate total paid amount
-    const total = payments.reduce(
-      (sum, payment) =>
-        payment.status === "Confirmé" ? sum + payment.amount : sum,
-      0
-    );
-    setTotalPaid(total);
-  }, []);
-
-  const handlePayment = (paymentId) => {
-    // Simulate payment process
-    alert(`Processus de paiement pour l'ID ${paymentId}`);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -32,9 +10,7 @@ const PaymentsSection = () => {
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Historique des Paiements</h2>
-          <div className="text-green-600 font-bold">
-            Total Payé: {totalPaid} €
-          </div>
+          <div className="text-green-600 font-bold">Total Payé: €</div>
         </div>
 
         <table className="w-full">
@@ -47,7 +23,7 @@ const PaymentsSection = () => {
               <th className="p-2 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          {/*          <tbody>
             {paymentHistory.map((payment) => (
               <tr key={payment.id} className="border-b">
                 <td className="p-2">{payment.practicalWork}</td>
@@ -76,7 +52,7 @@ const PaymentsSection = () => {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </tbody> */}
         </table>
       </div>
     </motion.div>
