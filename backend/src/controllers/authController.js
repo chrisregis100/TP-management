@@ -55,7 +55,7 @@ exports.inscription = async (req, res) => {
         matricule,
         role: 'enseignant',
         codeVerification,
-        codeVerificationExpire: Date.now() + 15 * 60 * 1000, // 15 minutes
+        codeVerificationExpire: Date.now() + 15 * 60 * 1000,
       });
     } else {
       // Logique pour les étudiants
@@ -96,7 +96,42 @@ exports.inscription = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de l\'inscription.', erreur: erreur.message });
   }
 };
+ 
+// resend code
+exports.resendCode = async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    console.log(req.body);
+    
+
+    // Vérifier si l'utilisateur existe
+    const utilisateur = await User.findOne({ email });
+    if (!utilisateur) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    // Générer un nouveau code de vérification
+    const codeVerification = genererCodeVerification();
+
+    // Mettre à jour le code de vérification et l'expiration
+    utilisateur.codeVerification = codeVerification;
+    utilisateur.codeVerificationExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    await utilisateur.save();
+
+    // Envoyer l'email de vérification
+    const emailEnvoye = await envoyerEmailVerification(email, codeVerification);
+    if (!emailEnvoye) {
+      return res.status(500).json({ message: 'Erreur lors de l\'envoi de l\'email de vérification.' });
+    }
+
+    res.json({ message: 'Code de vérification renvoyé par email.' });
+  } catch (erreur) {
+    console.error(erreur);
+    res.status(500).json({ message: 'Erreur lors de l\'envoi du code de vérification.', erreur: erreur.message });
+  }
+};
 
 // Vérification du code
 exports.verifierCode = async (req, res) => {
@@ -147,7 +182,7 @@ exports.verifierCode = async (req, res) => {
 // Connexion
 exports.connexion = async (req, res) => {
   try {
-    const {matricule, password } = req.body;
+    const {matricule, motDePasse:password } = req.body;
     console.log(req.body);
     
     // Rechercher l'utilisateur
@@ -156,23 +191,35 @@ exports.connexion = async (req, res) => {
     if (!utilisateur) {
       return res.status(401).json({ message: "Utilisateur non trouvé. veuillez vérifier votre matricule" });
     }
-
+    
     // Vérifier le mot de passe
     const motDePasseCorrespondant = await utilisateur.comparerMotDePasse(password);
     if (!motDePasseCorrespondant) {
       return res.status(401).json({ message: 'matricule ou mot de passe incorrect' });
     }
 
-  /*   // Vérifier si l'email est vérifié
+    // Vérifier si l'email est vérifié
     if (!utilisateur.estVerifie) {
       return res.status(403).json({ message: 'Veuillez vérifier votre email pour comfirmer votre adresse mail' });
     }
- */
+
     // Générer un token
     const token = genererToken(utilisateur);
 
-    res.set('Authorization', `Bearer ${token}`);
-
+    res.cookie('session_token', token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 
+    });
+    
+    // Stocker les informations de l'utilisateur dans la session
+    if (req.session) {
+      req.session.user = {
+        id: utilisateur._id,
+        email: utilisateur.email,
+        role: utilisateur.role
+      };
+    }
+    
     res.json({
       message: 'Connexion réussie',
       token,
@@ -181,7 +228,7 @@ exports.connexion = async (req, res) => {
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
         email: utilisateur.email,
-        matricule:utilisateur.matricule,
+        matricule: utilisateur.matricule,
         role: utilisateur.role
       }
     });
@@ -192,7 +239,6 @@ exports.connexion = async (req, res) => {
     });
   }
 };
-
 // Inscription spécifique pour les enseignants (par un admin)
 exports.inscriptionEnseignant = async (req, res) => {
   try {

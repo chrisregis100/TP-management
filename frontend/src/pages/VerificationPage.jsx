@@ -45,6 +45,21 @@ function Verification() {
       });
   };
 
+  const handleResendCode = () => {
+    fetch("http://localhost:5000/api/resendCode", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        alert(data.message);
+      });
+  };
+
   useEffect(() => {
     gsap.fromTo(
       formRef.current,
@@ -95,6 +110,16 @@ function Verification() {
             Vérifier
           </button>
         </form>
+        <div className="flex flex-col gap-4 items-center mt-4">
+          <p>Vous n&apos;avez pas reçu de code ?</p>
+          <button
+            type="submit"
+            onClick={handleResendCode}
+            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300"
+          >
+            Renvoyer un nouveau code
+          </button>
+        </div>
 
         <p className="mt-6 text-center">
           <Link to="/" className="text-indigo-500 hover:underline">

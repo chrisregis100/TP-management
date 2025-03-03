@@ -7,10 +7,11 @@ const tpController = require('../controllers/tpController');
 // Routes publiques
 router.post('/inscription', authController.inscription);
 router.post('/verification', authController.verifierCode);
+router.put('/resendCode', authController.resendCode);
 router.post('/connexion', authController.connexion);
 
 // Routes protégées pour l'admin
-router.post('/enseignant/inscription', authMiddleware(['admin']), authController.inscriptionEnseignant);
+router.post('/enseignant/inscription', authMiddleware("enseignant"), authController.inscriptionEnseignant);
 
 // Routes protégées nécessitant authentification
 router.get('/profil', authMiddleware(), (req, res) => {

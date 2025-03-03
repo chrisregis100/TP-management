@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { UseTpManager } from "../../hooks/UseTpManager";
 
 // eslint-disable-next-line react/prop-types
 const CreateTPModal = ({ onClose }) => {
-  const [categories, setCategories] = useState([]);
+  const { registerTP } = UseTpManager;
 
-  useEffect(() => {
-    fetch("http://localhost:5000/api/tps/categorie")
-      .then((res) => res.json())
-      .then((data) => {
-        setCategories(data);
-      });
-  }, []);
+  const fields = [{ filiere: "MIA" }, { filiere: "SVT" }, { filiere: "PC" }];
+
+  const annees = [
+    { annee: "Licence 1" },
+    { annee: "Licence 2" },
+    { annee: "Licence 3" },
+  ];
 
   const [formData, setFormData] = useState({
     title: "",
@@ -33,8 +34,12 @@ const CreateTPModal = ({ onClose }) => {
     }));
   };
 
+  // inscription de nouveau tp
   const handleSubmit = (e) => {
+    console.log(formData);
+
     e.preventDefault();
+    registerTP(formData);
   };
 
   return (
@@ -117,11 +122,15 @@ const CreateTPModal = ({ onClose }) => {
                 <select
                   name="filiere"
                   id="filiere"
+                  onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 >
                   <option value="filiere1">Selectionnez une filiere</option>
-                  <option value="filiere2">Filière 2</option>
-                  <option value="filiere3">Filière 3</option>
+                  {fields.map((filiere) => (
+                    <option key={filiere.filiere} value={filiere.filiere}>
+                      {filiere.filiere}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -135,11 +144,15 @@ const CreateTPModal = ({ onClose }) => {
                 <select
                   name="annee"
                   id="annee"
+                  onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 >
                   <option value="annee1">Selectionnez une année</option>
-                  <option value="annee2">Année 2</option>
-                  <option value="annee3">Année 3</option>
+                  {annees.map((annee) => (
+                    <option key={annee.annee} value={annee.annee}>
+                      {annee.annee}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -174,8 +187,10 @@ const CreateTPModal = ({ onClose }) => {
                   type="time"
                   id="schedule"
                   name="schedule"
-                  value={formData.schedule}
-                  onChange={handleChange}
+                  value={formData.horaire}
+                  onChange={(e) =>
+                    setFormData({ ...formData, horaire: e.target.value })
+                  }
                   required
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="ex: Lundi, 10:00"
@@ -193,8 +208,10 @@ const CreateTPModal = ({ onClose }) => {
                   type="text"
                   id="duration"
                   name="duration"
-                  value={formData.duration}
-                  onChange={handleChange}
+                  value={formData.duree}
+                  onChange={(e) =>
+                    setFormData({ ...formData, duree: e.target.value })
+                  }
                   required
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="ex: 2h"

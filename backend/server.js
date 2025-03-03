@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./src/config/database');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const { authMiddleware } = require('./src/middleware/authMiddeleware');
 require('dotenv').config();
 
 const app = express();
@@ -8,12 +11,19 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 // Database Connection
 connectDB();
-// Routes (à ajouter plus tard)
+// Routes
+
 app.use('/api', require('./src/routes/userRoutes'));
  app.use('/api', require('./src/routes/tpRoutes'));
+
+ app.get("/private", authMiddleware("enseignant"), (req, res) => {
+  
+  res.json({ message: "Accès autorisé" });  
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

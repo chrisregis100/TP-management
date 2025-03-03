@@ -13,7 +13,7 @@ const TPSchema = new mongoose.Schema({
     trim: true
   },
   annee: {
-    type: Number,
+    type: String,
     required: true,
   },
   description: {
@@ -21,8 +21,7 @@ const TPSchema = new mongoose.Schema({
     required: true
   },
   capacity: {
-    type: Number,
-    required: true,
+    type: String,
     min: 1
   },
   teacher: {
@@ -39,7 +38,7 @@ const TPSchema = new mongoose.Schema({
   
   },
   duree: {
-    type: Number,
+    type: String,
    
   },
   price: {

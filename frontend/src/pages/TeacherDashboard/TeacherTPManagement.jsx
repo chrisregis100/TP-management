@@ -1,7 +1,21 @@
 import { Bell } from "lucide-react";
 import SideBar from "../../components/teacherDashboard/SideBar";
+import { useEffect, useState } from "react";
 
 const TeacherDashboard = () => {
+  const [session, setSession] = useState(null);
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const { role } = JSON.parse(user);
+      if (role !== "enseignant") {
+        window.location.href = "/";
+      }
+
+      setSession(JSON.parse(user));
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Top Navigation Bar */}
@@ -18,7 +32,7 @@ const TeacherDashboard = () => {
                 <Bell className="w-5 h-5 text-gray-600" />
               </button>
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                TD
+                {session?.nom}
               </div>
             </div>
           </div>
