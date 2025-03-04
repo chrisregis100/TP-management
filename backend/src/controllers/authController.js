@@ -182,11 +182,16 @@ exports.verifierCode = async (req, res) => {
 // Connexion
 exports.connexion = async (req, res) => {
   try {
-    const {matricule, motDePasse:password } = req.body;
-    console.log(req.body);
+    const {matricule, password } = req.body;
+    if (!req.body.matricule || !req.body.password) {
+      return res.status(400).json({ message: "Matricule et mot de passe requis" });
+  }
+  
     
     // Rechercher l'utilisateur
     const utilisateur = await User.findOne({ matricule });
+    
+    console.log(utilisateur);
     
     if (!utilisateur) {
       return res.status(401).json({ message: "Utilisateur non trouvé. veuillez vérifier votre matricule" });

@@ -20,6 +20,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = { matricule, password };
+    console.log(data);
     const response = await fetch("http://localhost:5000/api/connexion", {
       method: "POST",
       headers: {
