@@ -5,13 +5,11 @@ const authMiddleware = (rolesAutorises = []) => {
     // Récupérer le token depuis l'en-tête Authorization
   const token = req.cookies["session_token"];
 
-  console.log(token);
   
 
   if(!token){
-    return res.status(401).json({ message: 'Token manquant' });
+    return res.status(401).json({ message: "Vous n'ếtes pas autorisé à mener cette action" });
   }
-    console.log(token);
 
     try {
       // Vérifier et décoder le token

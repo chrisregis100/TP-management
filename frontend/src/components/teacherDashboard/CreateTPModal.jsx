@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { UseTpManager } from "../../hooks/UseTpManager";
+import { Button, Modal, Spin } from "antd";
 
 // eslint-disable-next-line react/prop-types
-const CreateTPModal = ({ onClose }) => {
+const CreateTPModal = ({ onClose, onShow }) => {
   const { registerTP } = UseTpManager;
+  const [isLoading, setIsLoading] = useState(false);
 
   const fields = [{ filiere: "MIA" }, { filiere: "SVT" }, { filiere: "PC" }];
 
@@ -36,44 +37,31 @@ const CreateTPModal = ({ onClose }) => {
 
   // inscription de nouveau tp
   const handleSubmit = (e) => {
-    console.log(formData);
-
     e.preventDefault();
-    registerTP(formData);
+    try {
+      console.log(formData);
+
+      setIsLoading(true);
+      registerTP(formData);
+      onclose();
+      setIsLoading(false);
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   return (
     <AnimatePresence>
       <>
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        />
-
         {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        <Modal
+          title="Créer un nouveau TP"
+          open={onShow}
+          onOk={onClose}
+          onCancel={onClose}
+          footer={null}
         >
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md lg:max-w-2xl">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Créer un nouveau TP
-              </h2>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label
@@ -237,23 +225,25 @@ const CreateTPModal = ({ onClose }) => {
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
                   onClick={onClose}
                   className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
                   Annuler
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
+                  onClick={handleSubmit}
                   className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
                 >
-                  Créer le TP
-                </button>
+                  Enregistrer le TP
+                  {isLoading && <Spin />}
+                </Button>
               </div>
             </form>
           </div>
-        </motion.div>
+        </Modal>
       </>
     </AnimatePresence>
   );
