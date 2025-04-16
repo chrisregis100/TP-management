@@ -1,17 +1,8 @@
 import { motion } from "framer-motion";
-import {
-  Edit,
-  PlusCircle,
-  Trash2,
-  Clock,
-  Users,
-  CalendarDays,
-  GraduationCap,
-  BookOpen,
-} from "lucide-react";
+import { Edit, PlusCircle, Trash2, Clock, Users, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import CreateTPModal from "./CreateTPModal";
-import { Button, Tag, Tooltip } from "antd";
+import { Button } from "antd";
 import { UseTpManager } from "../../hooks/UseTpManager";
 import UpdateModal from "./updateModat";
 
@@ -41,6 +32,12 @@ const OverviewSection = () => {
     setOpenEditModal(true);
   };
 
+  const getStatusColor = (status) => {
+    return status === "active"
+      ? "bg-green-100 text-green-800"
+      : "bg-yellow-100 text-yellow-800";
+  };
+
   useEffect(() => {
     handleGetTps();
   }, []);
@@ -68,72 +65,72 @@ const OverviewSection = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-2">
         {tps.map((tp) => (
           <motion.div
-            key={tp._id}
-            className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden"
-            whileHover={{ y: -5 }}
+            key={tp.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100"
           >
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4">
-              <h3 className="text-xl font-bold text-white truncate">
-                {tp.title}
-              </h3>
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {tp.title}
+                </h3>
+                <p className="text-gray-500 text-sm mt-1">{tp.description}</p>
+              </div>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                  tp.status
+                )}`}
+              >
+                {tp.status === "active" ? "Actif" : "En attente"}
+              </span>
             </div>
 
-            <div className="p-4">
-              <p className="text-gray-700 mb-4 line-clamp-2">
-                {tp.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="space-y-3">
+              <div className="flex gap-2 items-center justify-between">
                 <div className="flex items-center text-gray-600">
-                  <Clock className="w-4 h-4 mr-2 text-blue-500" />
+                  <Users className="w-4 h-4 mr-2" />
+                  <span className="text-sm">
+                    {tp.registeredStudents.length} étudiants inscrits
+                  </span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Calendar className="w-4 h-4 mr-2" />
                   <span className="text-sm">{tp.horaire}</span>
                 </div>
-                <div className="flex items-center text-gray-600">
-                  <Users className="w-4 h-4 mr-2 text-blue-500" />
-                  <span className="text-sm">{tp.capacity} places</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Clock className="w-4 h-4 mr-2 text-blue-500" />
-                  <span className="text-sm">{tp.duree}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <CalendarDays className="w-4 h-4 mr-2 text-blue-500" />
-                  <span className="text-sm">{tp.annee}</span>
-                </div>
               </div>
 
-              <div className="flex items-center gap-2 mb-4">
-                <Tag color="blue" className="flex items-center">
-                  <GraduationCap className="w-3 h-3 mr-1" />
-                  {tp.filiere}
-                </Tag>
-                <Tag color="green" className="flex gap-1 items-center">
-                  <BookOpen className="w-3 h-3 mr-1" />
-                  {tp.price}&nbsp;FCFA
-                </Tag>
+              <div className="flex items-center text-gray-600">
+                <Clock className="w-4 h-4 mr-2" />
+                <span className="text-sm">{tp.duree}</span>
               </div>
+            </div>
 
-              <div className="flex justify-end gap-2 mt-2">
-                <Tooltip title="Modifier">
-                  <Button
-                    type="primary"
-                    shape="circle"
-                    icon={<Edit className="w-4 h-4" />}
-                    className="bg-blue-500"
+            <div>
+              <div className="flex justify-between gap-2 mt-4 pt-4 border-t">
+                <div>
+                  <Button>Programmer</Button>
+                  <Button>Organiser les etudiants</Button>
+                </div>
+                <div className="flex items-center">
+                  <button
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Modifier"
                     onClick={() => handleEditTP(tp._id)}
-                  />
-                </Tooltip>
-                <Tooltip title="Supprimer">
-                  <Button
-                    danger
-                    shape="circle"
-                    icon={<Trash2 className="w-4 h-4" />}
+                  >
+                    <Edit className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <button
+                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Supprimer"
                     onClick={() => handleDeleteTP(tp._id)}
-                  />
-                </Tooltip>
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>

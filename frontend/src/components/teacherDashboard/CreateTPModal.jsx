@@ -43,7 +43,7 @@ const CreateTPModal = ({ onClose, onShow }) => {
 
       setIsLoading(true);
       registerTP(formData);
-      onclose();
+      onClose();
       setIsLoading(false);
     } catch (error) {
       throw new Error(error);

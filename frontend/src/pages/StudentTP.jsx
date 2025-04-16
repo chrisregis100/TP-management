@@ -16,7 +16,6 @@ import SettingsSection from "../components/studentDashboard/SettingSection";
 import ScheduleSection from "../components/studentDashboard/SheduleSection";
 const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
-  const [userProfile, setUserProfile] = useState(null);
 
   /*   const fetchUserProfile = async () => {
     try {
@@ -78,7 +77,7 @@ const StudentDashboard = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "overview":
-        return <OverviewSection userProfile={userProfile} />;
+        return <OverviewSection />;
       case "payments":
         return <PaymentsSection />;
       case "groups":
@@ -88,9 +87,9 @@ const StudentDashboard = () => {
       case "grades":
         return <GradesSection />;
       case "settings":
-        return <SettingsSection userProfile={userProfile} />;
+        return <SettingsSection />;
       default:
-        return <OverviewSection userProfile={userProfile} />;
+        return <OverviewSection />;
     }
   };
 
@@ -104,17 +103,7 @@ const StudentDashboard = () => {
         className="w-64 bg-white shadow-xl p-6 border-r"
       >
         <div className="mb-10 text-center">
-          <div className="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-2xl font-bold text-blue-600">
-              {userProfile ? userProfile.name[0] : ""}
-            </span>
-          </div>
-          <h1 className="text-xl font-bold text-blue-600">
-            {userProfile ? userProfile.name : "Chargement..."}
-          </h1>
-          <p className="text-gray-500 text-sm">
-            {userProfile ? userProfile.program : ""}
-          </p>
+          <p className="text-2xl font-bold text-gray-800">Dashboard Etudiant</p>
         </div>
 
         <nav className="space-y-2">
@@ -145,7 +134,7 @@ const StudentDashboard = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex-1 p-10 bg-gray-50"
+        className="flex-1 px-10 bg-gray-50"
       >
         {renderActiveSection()}
       </motion.div>

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Edit, PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle } from "lucide-react";
+import { UseTpManager } from "../../hooks/UseTpManager";
+import { useStudentsManager } from "../../hooks/useStudentsManager";
 
 const StudentManagementSection = () => {
   const [students, setStudents] = useState([]);
@@ -13,6 +15,25 @@ const StudentManagementSection = () => {
       setNewGroup("");
     }
   };
+
+  const handleGetStudents = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.id) {
+      const response = await UseTpManager.getStudents(user.id);
+      console.log(response);
+      response.forEach((student) => {
+        useStudentsManager.getStudentById(student).then((data) => {
+          console.log(data);
+          setStudents(data);
+          console.log(students);
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleGetStudents();
+  }, []);
 
   return (
     <motion.div
@@ -48,7 +69,7 @@ const StudentManagementSection = () => {
               <th className="p-2 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          {/*  <tbody>
             {students.map((student) => (
               <tr key={student.id} className="border-b">
                 <td className="p-2">{student.name}</td>
@@ -64,7 +85,7 @@ const StudentManagementSection = () => {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </tbody> */}
         </table>
       </div>
     </motion.div>

@@ -1,19 +1,20 @@
-const Field = require('../models/FieldsModel');
-const TP = require('../models/TP');
+const Field = require("../models/FieldsModel");
+const TP = require("../models/TP");
+const User = require("../models/userModel");
 
 //create tp
 exports.createTP = async (req, res) => {
   try {
-    const { 
-      title, 
+    const {
+      title,
       filiere,
       annee,
-      description, 
+      description,
       maxStudents,
       horaire,
       duree,
-      price, 
-    } = req.body;        
+      price,
+    } = req.body;
 
     const newTP = new TP({
       title: title,
@@ -25,95 +26,121 @@ exports.createTP = async (req, res) => {
       duree: duree,
       teacher: req.user.id,
       price: price,
-    });    
+    });
 
     const savedTP = await newTP.save();
 
     res.status(201).json({
-      message: 'TP créé avec succès',
-      tp: savedTP
+      message: "TP créé avec succès",
+      tp: savedTP,
     });
   } catch (error) {
-    res.status(400).json({ 
-      message: 'Erreur lors de la création du TP',
-      error: error.message 
+    res.status(400).json({
+      message: "Erreur lors de la création du TP",
+      error: error.message,
     });
   }
 };
 
-
 // find all tp by teacher id
 exports.findAllTPs = async (req, res) => {
-    try {
-      const tps = await TP.find({ teacher: req.user.id });
-      res.json(tps);
-    } catch (error) {
-      res.status(400).json({ 
-        message: 'Erreur lors de la recherche des TPs',
-        error: error.message 
-      });
-    }
-  };
-
-
-  // delete TP by teacher 
-
-  exports.deleteTPById = async(req, res)=>{
-    try {
-      const tp = await TP.findById(req.params.tpId);
-      if (!tp) {
-        return res.status(404).json({ message: 'TP non trouvé' });
-      }
-
-      // Vérifier si l'enseignant est le propriétaire du TP
-      if (tp.teacher.toString() !== req.user.id) {
-        return res.status(403).json({ message: 'Vous n\'êtes pas le propriétaire de ce TP' });
-      }
-
-      await tp.deleteOne();
-
-      res.status(200).json({
-        message: 'TP supprimé avec succès',
-        tp
-      });
-    } catch (error) {
-      res.status(400).json({ 
-        message: 'Erreur lors de la suppression du TP',
-        error: error.message 
-      });
-    }
+  try {
+    const tps = await TP.find({ teacher: req.user.id });
+    res.json(tps);
+  } catch (error) {
+    res.status(400).json({
+      message: "Erreur lors de la recherche des TPs",
+      error: error.message,
+    });
   }
-  // update TP by teacher
-  exports.updateTPById = async (req, res) => {
-    try {
-      const tp = await TP.findById(req.params.tpId);
-      if (!tp) {
-        return res.status(404).json({ message: 'TP non trouvé' });
-      }
+};
 
-      // Vérifier si l'enseignant est le propriétaire du TP
-      if (tp.teacher.toString() !== req.user.id) {
-        return res.status(403).json({ message: 'Vous n\'êtes pas le propriétaire de ce TP' });
-      }
+// delete TP by teacher
 
-      tp.title = req.body.title || tp.title;
-      tp.description = req.body.description || tp.description;
-      tp.capacity = req.body.capacity || tp.capacity;
-      tp.price = req.body.price || tp.price;
-      tp.startDate = req.body.startDate || tp.startDate;
-      tp.endDate = req.body.endDate || tp.endDate;
-
-      await tp.save();
-
-      res.status(200).json({
-        message: 'TP mis à jour avec succès',
-        tp
-      });
-    } catch (error) {
-      res.status(400).json({ 
-        message: 'Erreur lors de la mise à jour du TP',
-        error: error.message 
-      });
+exports.deleteTPById = async (req, res) => {
+  try {
+    const tp = await TP.findById(req.params.tpId);
+    if (!tp) {
+      return res.status(404).json({ message: "TP non trouvé" });
     }
+
+    // Vérifier si l'enseignant est le propriétaire du TP
+    if (tp.teacher.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "Vous n'êtes pas le propriétaire de ce TP" });
+    }
+
+    await tp.deleteOne();
+
+    res.status(200).json({
+      message: "TP supprimé avec succès",
+      tp,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Erreur lors de la suppression du TP",
+      error: error.message,
+    });
   }
- 
+};
+// update TP by teacher
+exports.updateTPById = async (req, res) => {
+  try {
+    const tp = await userModel.findById(req.params.tpId);
+    if (!tp) {
+      return res.status(404).json({ message: "TP non trouvé" });
+    }
+
+    // Vérifier si l'enseignant est le propriétaire du TP
+    if (tp.teacher.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "Vous n'êtes pas le propriétaire de ce TP" });
+    }
+
+    tp.title = req.body.title || tp.title;
+    tp.description = req.body.description || tp.description;
+    tp.capacity = req.body.capacity || tp.capacity;
+    tp.price = req.body.price || tp.price;
+    tp.startDate = req.body.startDate || tp.startDate;
+    tp.endDate = req.body.endDate || tp.endDate;
+
+    await tp.save();
+
+    res.status(200).json({
+      message: "TP mis à jour avec succès",
+      tp,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Erreur lors de la mise à jour du TP",
+      error: error.message,
+    });
+  }
+};
+
+// recupération des etudiants inscrits à un tp
+exports.getStudentsByTPId = async (req, res) => {
+  try {
+    const id = req.params.teacherId;
+    const tp = await TP.findOne({ teacher: id });
+
+    /*     // Vérifier si l'enseignant est le propriétaire du TP
+    if (tp.teacher.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "Vous n'êtes pas le propriétaire de ce TP" });
+    } */
+    if (!tp) {
+      return res.status(404).json({ message: "TP non trouvé" });
+    }
+
+    res.json(tp.registeredStudents);
+  } catch (error) {
+    res.status(400).json({
+      message: "Erreur lors de la recherche des étudiants",
+      error: error.message,
+    });
+  }
+};

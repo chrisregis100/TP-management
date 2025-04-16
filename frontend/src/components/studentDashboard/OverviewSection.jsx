@@ -1,67 +1,85 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import useStudentsManager from "../../hooks/useStudentsManager";
+import { Button, Input } from "antd";
 import { motion } from "framer-motion";
-import { Users, Calendar, Clock, Edit, Trash2 } from "lucide-react";
-import CreateTPModal from "../teacherDashboard/CreateTPModal";
+import { Bell, Calendar, Clock, Filter, Users } from "lucide-react";
 
 const OverviewSection = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [tpList, setTpList] = useState([
-    {
-      id: 1,
-      title: "Analyse Numérique",
-      description: "Introduction aux méthodes numériques",
-      students: 25,
-      schedule: "Lundi, 10:00",
-      duration: "2h",
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Programmation Web",
-      description: "Développement frontend et backend",
-      students: 30,
-      schedule: "Mardi, 14:00",
-      duration: "3h",
-      status: "pending",
-    },
-    {
-      id: 3,
-      title: "Base de Données",
-      description: "Conception et optimisation",
-      students: 20,
-      schedule: "Mercredi, 08:00",
-      duration: "2h",
-      status: "active",
-    },
-  ]);
+  const [tps, setTps] = useState([]);
+  const navigate = useNavigate();
 
-  const handleCreateTP = (newTP) => {
-    const tp = {
-      id: tpList.length + 1,
-      ...newTP,
-      students: 0,
-      status: "pending",
-    };
-    setTpList([...tpList, tp]);
-    setIsCreateModalOpen(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const getUserSession = () => {
+    console.log(user.role);
+
+    if (user.role !== "etudiant") {
+      toast.error("Vous n'êtes pas un etudiant, veuillez vous connecter");
+      navigate("/login");
+    }
+    return user;
   };
 
-  const getStatusColor = (status) => {
-    return status === "active"
-      ? "bg-green-100 text-green-800"
-      : "bg-yellow-100 text-yellow-800";
+  useEffect(() => {
+    getUserSession();
+  }, []);
+
+  const handleGetTps = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.id) {
+      const response = await useStudentsManager.findAllTps();
+      setTps(response);
+      console.log(response);
+    }
+  };
+
+  useEffect(() => {
+    handleGetTps();
+  }, []);
+
+  const handleRegisterForTP = async (tpId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.id) {
+      await useStudentsManager.registerForTP(tpId);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between w-full h-24 px-4 py-2  border-b shadow-md items-center">
         <h2 className="text-2xl font-bold text-gray-800">
-          Vos Travaux Pratiques
+          Mes Travaux Pratiques
         </h2>
+        <div className="flex items-center gap-2">
+          <Bell className=" size-6 text-blue-500 mr-2" />
+          <div>
+            <p className="text-lg font-semibold">
+              {user.prenom} {user.nom}{" "}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div>
+        <form action="" className="flex gap-2 items-center">
+          <Input
+            type="text"
+            placeholder="Rechercher un TP"
+            className="max-w-md p-2 border rounded-lg"
+          />
+          <Button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+            Rechercher
+          </Button>
+          <Button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+            <Filter />
+          </Button>
+        </form>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tpList.map((tp) => (
+        {tps.map((tp) => (
           <motion.div
             key={tp.id}
             initial={{ opacity: 0, y: 20 }}
@@ -75,53 +93,36 @@ const OverviewSection = () => {
                 </h3>
                 <p className="text-gray-500 text-sm mt-1">{tp.description}</p>
               </div>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                  tp.status
-                )}`}
-              >
-                {tp.status === "active" ? "Actif" : "En attente"}
-              </span>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center text-gray-600">
-                <Users className="w-4 h-4 mr-2" />
-                <span className="text-sm">{tp.students} étudiants</span>
-              </div>
-              <div className="flex items-center text-gray-600">
-                <Calendar className="w-4 h-4 mr-2" />
-                <span className="text-sm">{tp.schedule}</span>
+              <div className="flex gap-2 items-center justify-between">
+                <div className="flex items-center text-gray-600">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span className="text-sm">{tp.students} étudiants</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span className="text-sm">Bientôt</span>
+                </div>
               </div>
               <div className="flex items-center text-gray-600">
                 <Clock className="w-4 h-4 mr-2" />
-                <span className="text-sm">{tp.duration}</span>
+                <span className="text-sm">Bientôt</span>
               </div>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
-              <button
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Modifier"
-              >
-                <Edit className="w-4 h-4 text-gray-600" />
-              </button>
-              <button
-                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                title="Supprimer"
-              >
-                <Trash2 className="w-4 h-4 text-red-600" />
-              </button>
+              <div>
+                <Button
+                  type="primary"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                  onClick={() => handleRegisterForTP(tp._id)}
+                >
+                  s&apos;inscrire
+                </Button>
+              </div>
             </div>
           </motion.div>
         ))}
       </div>
-
-      <CreateTPModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateTP}
-      />
     </div>
   );
 };
